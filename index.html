@@ -5,31 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Interactivos · Diario Río Negro</title>
 <meta name="description" content="Infografías interactivas de Diario Río Negro.">
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="icon" type="image/png" href="./favicon.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;800&family=Fira+Sans:wght@600;700&display=swap');
   *{ box-sizing:border-box; }
-  html, body{ margin:0; background:#fff; }
+  html, body{ margin:0; background:#f6f5f2; }
   body{ font-family:'Chivo', 'Segoe UI', system-ui, -apple-system, sans-serif; color:#2b2a25; -webkit-font-smoothing:antialiased; }
-  .wrap{ max-width:1100px; margin:0 auto; padding:28px 16px 40px; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:28px 16px 48px; }
 
-  .head{ display:flex; align-items:center; gap:14px; padding-bottom:16px; margin-bottom:24px; border-bottom:2px solid #eee; }
+  .head{ display:flex; align-items:center; gap:14px; padding-bottom:18px; margin-bottom:28px; border-bottom:2px solid #e8e6e0; }
   .head svg{ height:20px; width:auto; display:block; }
-  .head h1{ margin:0; padding-left:14px; border-left:2px solid #eee; font-size:20px; line-height:1; font-weight:800; }
+  .head h1{ margin:0; padding-left:14px; border-left:2px solid #e8e6e0; font-size:20px; line-height:1; font-weight:800; }
 
-  /* tarjetas: captura + título */
-  .grid{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:28px 20px; }
-  .card{ display:block; color:inherit; text-decoration:none; }
-  .card img{ display:block; width:100%; height:auto; aspect-ratio:4 / 3; object-fit:cover; object-position:top; border:2px solid #eee; border-radius:10px; transition:border-color .15s ease; }
-  .card h2{ margin:10px 0 0; font-family:'Fira Sans', 'Segoe UI', system-ui, sans-serif; font-size:16px; line-height:1.2; font-weight:700; }
-  .card:hover img{ border-color:#d6d6d6; }
-  .card:hover h2{ text-decoration:underline; text-underline-offset:3px; }
-  .card:focus-visible{ outline:2px solid #8f8c82; outline-offset:4px; border-radius:10px; }
+  /* temáticas */
+  .topic + .topic{ margin-top:44px; }
+  .topic-title{ display:flex; align-items:center; gap:12px; margin:0 0 18px; font-family:'Fira Sans', 'Segoe UI', system-ui, sans-serif; font-size:13px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#e30613; }
+  .topic-title::after{ content:""; flex:1; height:2px; background:#e8e6e0; }
 
-  @media (max-width:520px){
-    .grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:20px 12px; }
-    .card h2{ font-size:14px; }
+  /* tarjeta: captura redondeada adentro, título y botón a la nota, todo en una pieza */
+  .grid{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:24px; }
+  .card{ display:flex; flex-direction:column; padding:12px; background:#fff; border-radius:20px; box-shadow:0 1px 2px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.06); transition:transform .2s ease, box-shadow .2s ease; }
+  .card:hover{ transform:translateY(-4px); box-shadow:0 1px 2px rgba(20,20,20,.04), 0 18px 40px rgba(20,20,20,.11); }
+  .card-link{ display:block; color:inherit; text-decoration:none; border-radius:14px; }
+  .card-link:focus-visible{ outline:2px solid #8f8c82; outline-offset:3px; }
+  .thumb{ display:block; border-radius:14px; overflow:hidden; background:#f6f5f2; box-shadow:inset 0 0 0 1px rgba(20,20,20,.06); }
+  .thumb img{ display:block; width:100%; height:auto; aspect-ratio:4 / 3; object-fit:cover; object-position:top; mix-blend-mode:multiply; transition:transform .35s ease; }
+  .card:hover .thumb img{ transform:scale(1.03); }
+  .card h3{ margin:0; padding:14px 6px 0; font-family:'Fira Sans', 'Segoe UI', system-ui, sans-serif; font-size:18px; line-height:1.2; font-weight:700; text-wrap:balance; }
+  .card-link:hover h3{ text-decoration:underline; text-underline-offset:3px; }
+  .rn-btn{ display:flex; align-items:center; justify-content:center; gap:8px; margin:14px 0 0; padding:10px 14px; border-radius:12px; background:#f4f2ec; color:#2b2a25; font-size:13.5px; font-weight:700; text-decoration:none; white-space:nowrap; transition:background .15s ease; }
+  .rn-btn:hover{ background:#e9e7e0; }
+  .rn-btn:focus-visible{ outline:2px solid #8f8c82; outline-offset:2px; }
+  .rn-btn img{ width:20px; height:20px; display:block; }
+  .rn-btn[href=""]{ display:none; }
+  .card:has(.rn-btn[href=""]) h3{ padding-bottom:6px; }
+
+  @media (max-width:560px){
+    .grid{ grid-template-columns:1fr; gap:16px; }
+    .card{ border-radius:18px; }
+    .card h3{ font-size:17px; }
   }
+  @media (prefers-reduced-motion:reduce){ .card, .thumb img{ transition:none; } .card:hover, .card:hover .thumb img{ transform:none; } }
 </style>
 </head>
 <body>
@@ -39,14 +55,39 @@
     <h1>Interactivos</h1>
   </header>
 
-  <!-- Para sumar un proyecto: subir el .html a /infografia, su captura (800×600) a /thumbs y copiar un <li> arriba de todo -->
-  <ul class="grid">
-    <li><a class="card" href="infografia/balotaje-brasil-2026-banner.html"><img src="thumbs/balotaje-brasil-2026-banner.jpg" alt="" width="800" height="600" loading="lazy"><h2>Banner: segunda vuelta en Brasil</h2></a></li>
-    <li><a class="card" href="infografia/lluvias-en-rio-negro.html"><img src="thumbs/lluvias-en-rio-negro.jpg" alt="" width="800" height="600" loading="lazy"><h2>Precipitaciones en Río Negro</h2></a></li>
-    <li><a class="card" href="infografia/balotaje-brasil-2026.html"><img src="thumbs/balotaje-brasil-2026.jpg" alt="" width="800" height="600" loading="lazy"><h2>Elecciones en Brasil</h2></a></li>
-    <li><a class="card" href="infografia/generales-brasil-2026.html"><img src="thumbs/generales-brasil-2026.jpg" alt="" width="800" height="600" loading="lazy"><h2>Los resultados de Brasil</h2></a></li>
-    <li><a class="card" href="infografia/distribucion-uranio-rio-negro.html"><img src="thumbs/distribucion-uranio-rio-negro.jpg" alt="" width="800" height="600" loading="lazy"><h2>Proyectos de uranio en Río Negro</h2></a></li>
-  </ul>
+  <!-- Para sumar un proyecto: subir el .html a /infografia y su captura (800×600) a /preview, y copiar un <li class="card">
+       arriba de todo en su temática (o una <section class="topic"> entera para una temática nueva).
+       El botón "Ver en rionegro.com.ar" lleva el link de la nota; si queda vacío, no se muestra. -->
+  <section class="topic">
+    <h2 class="topic-title">Elecciones en Brasil</h2>
+    <ul class="grid">
+      <li class="card">
+        <a class="card-link" href="infografia/balotaje-brasil-2026-banner.html"><span class="thumb"><img src="preview/balotaje-brasil-2026-banner.jpg" alt="" width="800" height="600" loading="lazy"></span><h3>Banner: segunda vuelta en Brasil</h3></a>
+        <a class="rn-btn" href="" target="_blank" rel="noopener"><img src="favicon.png" alt="" width="20" height="20">Ver en rionegro.com.ar</a>
+      </li>
+      <li class="card">
+        <a class="card-link" href="infografia/balotaje-brasil-2026.html"><span class="thumb"><img src="preview/balotaje-brasil-2026.jpg" alt="" width="800" height="600" loading="lazy"></span><h3>Elecciones en Brasil</h3></a>
+        <a class="rn-btn" href="" target="_blank" rel="noopener"><img src="favicon.png" alt="" width="20" height="20">Ver en rionegro.com.ar</a>
+      </li>
+      <li class="card">
+        <a class="card-link" href="infografia/generales-brasil-2026.html"><span class="thumb"><img src="preview/generales-brasil-2026.jpg" alt="" width="800" height="600" loading="lazy"></span><h3>Los resultados de Brasil</h3></a>
+        <a class="rn-btn" href="" target="_blank" rel="noopener"><img src="favicon.png" alt="" width="20" height="20">Ver en rionegro.com.ar</a>
+      </li>
+    </ul>
+  </section>
+  <section class="topic">
+    <h2 class="topic-title">Río Negro</h2>
+    <ul class="grid">
+      <li class="card">
+        <a class="card-link" href="infografia/lluvias-en-rio-negro.html"><span class="thumb"><img src="preview/lluvias-en-rio-negro.jpg" alt="" width="800" height="600" loading="lazy"></span><h3>Precipitaciones en Río Negro</h3></a>
+        <a class="rn-btn" href="" target="_blank" rel="noopener"><img src="favicon.png" alt="" width="20" height="20">Ver en rionegro.com.ar</a>
+      </li>
+      <li class="card">
+        <a class="card-link" href="infografia/distribucion-uranio-rio-negro.html"><span class="thumb"><img src="preview/distribucion-uranio-rio-negro.jpg" alt="" width="800" height="600" loading="lazy"></span><h3>Proyectos de uranio en Río Negro</h3></a>
+        <a class="rn-btn" href="" target="_blank" rel="noopener"><img src="favicon.png" alt="" width="20" height="20">Ver en rionegro.com.ar</a>
+      </li>
+    </ul>
+  </section>
 </div>
 </body>
 </html>
