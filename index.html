@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactivos · Diario Río Negro</title>
+<meta name="description" content="Infografías interactivas de Diario Río Negro.">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;800&family=Fira+Sans:wght@600;700&display=swap');
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; background:#fff; }
+  body{ font-family:'Chivo', 'Segoe UI', system-ui, -apple-system, sans-serif; color:#2b2a25; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:28px 16px 40px; }
+
+  .head{ display:flex; align-items:center; gap:14px; padding-bottom:16px; margin-bottom:24px; border-bottom:2px solid #eee; }
+  .head svg{ height:20px; width:auto; display:block; }
+  .head h1{ margin:0; padding-left:14px; border-left:2px solid #eee; font-size:20px; line-height:1; font-weight:800; }
+
+  /* tarjetas: captura + título */
+  .grid{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:28px 20px; }
+  .card{ display:block; color:inherit; text-decoration:none; }
+  .card img{ display:block; width:100%; height:auto; aspect-ratio:4 / 3; object-fit:cover; object-position:top; border:2px solid #eee; border-radius:10px; transition:border-color .15s ease; }
+  .card h2{ margin:10px 0 0; font-family:'Fira Sans', 'Segoe UI', system-ui, sans-serif; font-size:16px; line-height:1.2; font-weight:700; }
+  .card:hover img{ border-color:#d6d6d6; }
+  .card:hover h2{ text-decoration:underline; text-underline-offset:3px; }
+  .card:focus-visible{ outline:2px solid #8f8c82; outline-offset:4px; border-radius:10px; }
+
+  @media (max-width:520px){
+    .grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:20px 12px; }
+    .card h2{ font-size:14px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <span aria-label="Río Negro"><svg viewBox="0 0 321 50" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M22.984 22.957c0 2.836-1.015 4.082-3.793 4.082H18.06V18.82h1.132c2.72 0 3.793 1.301 3.793 4.137M40.59 49.32v-8.218h-.512c-.504 0-1.191-.399-1.414-1.418l-.34-1.704c-1.02-5.101-3.004-6.8-6.851-7.652v-.226c5.156-1.532 6.965-4.649 6.965-9.012 0-7.656-4.868-11.453-17.38-11.453H0v8.5h1.363c.563 0 1.528.968 1.528 1.535V39.57c0 .567-.965 1.532-1.528 1.532H0v8.218h21.344v-8.218h-2.832v-5.844h1.758c1.921 0 2.828.91 3.054 3.289l1.02 10.773zm7.797-41.047h8.328l5.824-4.875V0H49.58zM42.445 49.32h21.852v-8.218h-1.59c-.562 0-1.531-.965-1.531-1.532V19.672c0-.567.969-1.535 1.531-1.535h1.59v-8.5H42.445v8.5h1.582c.57 0 1.532.968 1.532 1.535V39.57c0 .567-.961 1.532-1.532 1.532h-1.582zm49.18-19.558c0 7.09-1.93 10.543-5.04 10.543-3.112 0-5.034-3.453-5.034-10.543 0-7.086 1.922-10.207 5.035-10.207 3.11 0 5.039 3.12 5.039 10.207m16.016-.282c0-13.156-9.282-20.523-21.055-20.523-11.777 0-21.059 7.367-21.059 20.523C65.527 42.63 74.36 50 86.586 50s21.055-7.371 21.055-20.52m8.98 19.84h17.094v-8.218h-3.113V29.59h.171l10.864 19.73h13.644V19.672c0-.567.961-1.535 1.531-1.535h1.13v-8.5h-16.696v8.5h2.941v9.246h-.167l-9.743-17.746h-17.656v8.5h1.356c.57 0 1.53.968 1.53 1.535V39.57c0 .567-.96 1.532-1.53 1.532h-1.356zm43.176 0h35.379V34.922h-9.34l-1.184 5.496h-6.343v-6.797h8.546v-9.129h-8.546V18.82h6.226l1.3 4.48h8.888V9.638h-34.926v8.5h1.36c.57 0 1.527.968 1.527 1.535V39.57c0 .567-.957 1.532-1.528 1.532h-1.36zm56.762.68c3.34 0 7.195-.738 8.78-1.758 1.016 0 1.524 1.078 1.524 1.078h7.645V38.04c0-.567.96-1.532 1.527-1.532h.621v-8.215h-18.96v7.988h2.152v4.024a4.982 4.982 0 01-1.364.172c-4.297 0-5.316-4.137-5.316-11.223 0-7.938 2.598-10.094 6.957-10.094.453 0 1.363.059 1.813.113l1.527 4.82h9.851V9.638h-10.304c-1.918-.399-3.961-.68-6.11-.68-11.882 0-19.984 7.313-19.984 21.031 0 13.157 7.023 20.012 19.64 20.012m44.368-27.044c0 2.836-1.02 4.082-3.79 4.082h-1.132V18.82h1.133c2.718 0 3.789 1.301 3.789 4.137m17.61 26.363v-8.218h-.513c-.507 0-1.183-.399-1.414-1.418l-.336-1.704c-1.023-5.101-3-6.8-6.851-7.652v-.226c5.148-1.532 6.96-4.649 6.96-9.012 0-7.656-4.866-11.453-17.378-11.453h-21.05v8.5h1.35c.567 0 1.532.968 1.532 1.535V39.57c0 .567-.965 1.532-1.531 1.532h-1.352v8.218h21.332v-8.218h-2.824v-5.844h1.75c1.926 0 2.832.91 3.055 3.289l1.023 10.773zm26.48-19.558c0 7.09-1.922 10.543-5.04 10.543-3.109 0-5.038-3.453-5.038-10.543 0-7.086 1.93-10.207 5.039-10.207 3.117 0 5.039 3.12 5.039 10.207m16.02-.282c0-13.156-9.286-20.523-21.06-20.523-11.777 0-21.058 7.367-21.058 20.523 0 13.149 8.832 20.52 21.059 20.52 12.226 0 21.058-7.371 21.058-20.52" fill="#141414"></path></svg></span>
+    <h1>Interactivos</h1>
+  </header>
+
+  <!-- Para sumar un proyecto: subir el .html a /infografia, su captura (800×600) a /thumbs y copiar un <li> arriba de todo -->
+  <ul class="grid">
+    <li><a class="card" href="infografia/balotaje-brasil-2026-banner.html"><img src="thumbs/balotaje-brasil-2026-banner.jpg" alt="" width="800" height="600" loading="lazy"><h2>Banner: segunda vuelta en Brasil</h2></a></li>
+    <li><a class="card" href="infografia/lluvias-en-rio-negro.html"><img src="thumbs/lluvias-en-rio-negro.jpg" alt="" width="800" height="600" loading="lazy"><h2>Precipitaciones en Río Negro</h2></a></li>
+    <li><a class="card" href="infografia/balotaje-brasil-2026.html"><img src="thumbs/balotaje-brasil-2026.jpg" alt="" width="800" height="600" loading="lazy"><h2>Elecciones en Brasil</h2></a></li>
+    <li><a class="card" href="infografia/generales-brasil-2026.html"><img src="thumbs/generales-brasil-2026.jpg" alt="" width="800" height="600" loading="lazy"><h2>Los resultados de Brasil</h2></a></li>
+    <li><a class="card" href="infografia/distribucion-uranio-rio-negro.html"><img src="thumbs/distribucion-uranio-rio-negro.jpg" alt="" width="800" height="600" loading="lazy"><h2>Proyectos de uranio en Río Negro</h2></a></li>
+  </ul>
+</div>
+</body>
+</html>
