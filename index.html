@@ -18,9 +18,9 @@
 
   /* cabezal: mismo que la app de gráficos (logo + INTERACTIVO) */
   .head{ padding-bottom:18px; margin-bottom:28px; border-bottom:2px solid #e8e6e0; }
-  .brand{ display:flex; align-items:flex-end; gap:11px; }   /* INTERACTIVO sobre la misma línea de base que el logo */
+  .brand{ display:flex; align-items:baseline; gap:11px; }   /* INTERACTIVO sobre la misma línea de base que el logo */
   .brand svg.logo{ height:22px; width:auto; flex:none; display:block; }
-  .brand h1{ margin:0 0 -4.2px; font-size:25.6px; line-height:1; letter-spacing:normal; color:#2b2a25; white-space:nowrap; font-weight:500; }
+  .brand h1{ margin:0; font-size:16px; line-height:1; letter-spacing:normal; color:#2b2a25; white-space:nowrap; font-weight:500; }
 
   /* temáticas */
   .topic + .topic{ margin-top:44px; }
@@ -47,12 +47,6 @@
   .gh-mark{ width:15px; height:15px; display:block; }
   .rn-logo{ height:13.1px; width:auto; flex:none; display:block; }   /* viewBox con aire abajo igual al acento: las letras quedan en el centro */
 
-  /* celulares angostos: el cabezal se achica entero, con la misma proporción */
-  @media (max-width:380px){
-    .brand{ gap:9px; }
-    .brand svg.logo{ height:18px; }
-    .brand h1{ margin-bottom:-4.15px; font-size:20.9px; }
-  }
   @media (max-width:560px){
     .grid{ grid-template-columns:1fr; gap:16px; }
     .card{ border-radius:18px; }
