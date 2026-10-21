@@ -47,7 +47,7 @@
   .rn-alert[hidden]{ display:none; }
 
   /* ---------- cara a cara ---------- */
-  .rn-duel-wrap{ position:relative; }
+  .rn-duel-wrap{ position:relative; overflow:hidden; }   /* recorta el rebote elástico de la tira */
   .rn-duel{ display:flex; gap:5px; padding:0; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   /* con el mouse se puede arrastrar cuando hay contenido para deslizar */
   .rn-duel-wrap.can-left .rn-duel, .rn-duel-wrap.can-right .rn-duel{ cursor:grab; }
@@ -928,34 +928,72 @@
     if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelStep);
   }, { passive: false });
   $("rnDuel").addEventListener("touchstart", stopWheel, { passive: true });
-  // Con el mouse la tira también se arrastra (click y arrastrar); si hubo arrastre, no cuenta como click en la tarjeta
-  var drag = null, dragMoved = false;
+  // Con el mouse la tira también se arrastra (click y arrastrar), con inercia al soltar y rebote elástico
+  // en los bordes: se puede tirar un poco de más y vuelve sola. Si hubo arrastre, no cuenta como click en la tarjeta.
+  var drag = null, dragMoved = false, flingRaf = 0, pos = 0;
+  function maxScroll(){ var d = $("rnDuel"); return Math.max(0, d.scrollWidth - d.clientWidth); }
+  function rubber(o){ var c = 120; return (1 - 1 / (Math.abs(o) / c * 0.55 + 1)) * c * (o < 0 ? -1 : 1); }  // cuanto más se tira, menos cede
+  function paint(){
+    var d = $("rnDuel"), m = maxScroll(), inside = Math.max(0, Math.min(m, pos)), over = pos - inside;
+    d.scrollLeft = inside;
+    d.style.transform = over ? "translateX(" + (-rubber(over)).toFixed(1) + "px)" : "";
+  }
+  function stopFling(){ if (flingRaf) cancelAnimationFrame(flingRaf); flingRaf = 0; }
+  function fling(v){                                   // v en px/ms
+    var last = performance.now(), back = null;
+    stopFling();
+    flingRaf = requestAnimationFrame(function step(now){
+      var dt = Math.min(32, now - last), m = maxScroll(); last = now;
+      var out = pos < 0 ? pos : pos > m ? pos - m : 0;
+      if (!out || back === null && Math.abs(v) > 0.05 && out * v > 0 && Math.abs(out) < 400) {
+        pos += v * dt;
+        v *= Math.pow(out ? 0.8 : 0.95, dt / 16);       // se frena de a poco; fuera del borde, mucho más rápido
+        if (!out && Math.abs(v) < 0.02) { paint(); flingRaf = 0; return; }
+      } else {                                         // fuera del borde y sin impulso: vuelve como un imán
+        if (back === null) back = { from: pos, to: pos < 0 ? 0 : m, t0: now };
+        var k = Math.min(1, (now - back.t0) / 380), e = 1 - Math.pow(1 - k, 3);
+        pos = back.from + (back.to - back.from) * e;
+        if (k >= 1) { pos = back.to; paint(); flingRaf = 0; return; }
+      }
+      paint();
+      flingRaf = requestAnimationFrame(step);
+    });
+  }
   $("rnDuel").addEventListener("pointerdown", function(ev){
     var d = ev.currentTarget;
     if (ev.pointerType !== "mouse" || ev.button !== 0 || d.scrollWidth <= d.clientWidth) return;
-    stopWheel();
-    drag = { x: ev.clientX, left: d.scrollLeft, id: ev.pointerId };
+    stopWheel(); stopFling();
+    if (!d.style.transform) pos = d.scrollLeft;
+    drag = { x: ev.clientX, from: pos, id: ev.pointerId, track: [{ x: ev.clientX, t: performance.now() }] };
     dragMoved = false;
   });
   window.addEventListener("pointermove", function(ev){
     if (!drag) return;
     var d = $("rnDuel"), dx = ev.clientX - drag.x;
     if (!dragMoved) {
-      if (Math.abs(dx) < 5) return;                 // un click con temblor sigue siendo click
+      if (Math.abs(dx) < 5) return;                    // un click con temblor sigue siendo click
       dragMoved = true;
       d.classList.add("is-dragging");
       try { d.setPointerCapture(drag.id); } catch (e) {}
     }
-    d.scrollLeft = drag.left - dx;
+    drag.track.push({ x: ev.clientX, t: performance.now() });
+    if (drag.track.length > 6) drag.track.shift();
+    pos = drag.from - dx;
+    paint();
   });
   function endDrag(){
     if (!drag) return;
+    var tr = drag.track, a = tr[0], b = tr[tr.length - 1], now = performance.now();
+    var v = dragMoved && b.t > a.t && now - b.t < 80 ? -(b.x - a.x) / (b.t - a.t) : 0;   // velocidad de los últimos movimientos
     drag = null;
     $("rnDuel").classList.remove("is-dragging");
+    if (dragMoved) fling(v);
     setTimeout(function(){ dragMoved = false; }, 0);   // el click que sigue al soltar todavía lo ve
   }
   window.addEventListener("pointerup", endDrag);
   window.addEventListener("pointercancel", endDrag);
+  $("rnDuel").addEventListener("wheel", stopFling, { passive: true });
+  $("rnDuel").addEventListener("touchstart", stopFling, { passive: true });
   $("rnDuel").addEventListener("click", function(ev){ if (dragMoved) { ev.stopPropagation(); ev.preventDefault(); } }, true);
   $("rnDuel").addEventListener("dragstart", function(ev){ ev.preventDefault(); });   // que no se arrastren las fotos
   window.addEventListener("resize", updateDuelFades);
