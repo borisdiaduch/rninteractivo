@@ -49,6 +49,9 @@
   /* ---------- cara a cara ---------- */
   .rn-duel-wrap{ position:relative; }
   .rn-duel{ display:flex; gap:5px; padding:0; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  /* con el mouse se puede arrastrar cuando hay contenido para deslizar */
+  .rn-duel-wrap.can-left .rn-duel, .rn-duel-wrap.can-right .rn-duel{ cursor:grab; }
+  .rn-duel.is-dragging, .rn-duel.is-dragging *{ cursor:grabbing !important; -webkit-user-select:none; user-select:none; }
   .rn-duel::-webkit-scrollbar{ display:none; }
   .rn-duel > :first-child{ margin-left:auto; }   /* centrado si entra todo; desde el borde si hay que deslizar */
   .rn-duel > :last-child{ margin-right:auto; }
@@ -925,6 +928,36 @@
     if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelStep);
   }, { passive: false });
   $("rnDuel").addEventListener("touchstart", stopWheel, { passive: true });
+  // Con el mouse la tira también se arrastra (click y arrastrar); si hubo arrastre, no cuenta como click en la tarjeta
+  var drag = null, dragMoved = false;
+  $("rnDuel").addEventListener("pointerdown", function(ev){
+    var d = ev.currentTarget;
+    if (ev.pointerType !== "mouse" || ev.button !== 0 || d.scrollWidth <= d.clientWidth) return;
+    stopWheel();
+    drag = { x: ev.clientX, left: d.scrollLeft, id: ev.pointerId };
+    dragMoved = false;
+  });
+  window.addEventListener("pointermove", function(ev){
+    if (!drag) return;
+    var d = $("rnDuel"), dx = ev.clientX - drag.x;
+    if (!dragMoved) {
+      if (Math.abs(dx) < 5) return;                 // un click con temblor sigue siendo click
+      dragMoved = true;
+      d.classList.add("is-dragging");
+      try { d.setPointerCapture(drag.id); } catch (e) {}
+    }
+    d.scrollLeft = drag.left - dx;
+  });
+  function endDrag(){
+    if (!drag) return;
+    drag = null;
+    $("rnDuel").classList.remove("is-dragging");
+    setTimeout(function(){ dragMoved = false; }, 0);   // el click que sigue al soltar todavía lo ve
+  }
+  window.addEventListener("pointerup", endDrag);
+  window.addEventListener("pointercancel", endDrag);
+  $("rnDuel").addEventListener("click", function(ev){ if (dragMoved) { ev.stopPropagation(); ev.preventDefault(); } }, true);
+  $("rnDuel").addEventListener("dragstart", function(ev){ ev.preventDefault(); });   // que no se arrastren las fotos
   window.addEventListener("resize", updateDuelFades);
   renderHead();
   renderMap();
