@@ -947,11 +947,11 @@
       var out = pos < 0 ? pos : pos > m ? pos - m : 0;
       if (!out || back === null && Math.abs(v) > 0.05 && out * v > 0 && Math.abs(out) < 400) {
         pos += v * dt;
-        v *= Math.pow(out ? 0.8 : 0.95, dt / 16);       // se frena de a poco; fuera del borde, mucho más rápido
+        v *= Math.pow(out ? 0.65 : 0.95, dt / 16);      // se frena de a poco; fuera del borde, mucho más rápido
         if (!out && Math.abs(v) < 0.02) { paint(); flingRaf = 0; return; }
       } else {                                         // fuera del borde y sin impulso: vuelve como un imán
         if (back === null) back = { from: pos, to: pos < 0 ? 0 : m, t0: now };
-        var k = Math.min(1, (now - back.t0) / 380), e = 1 - Math.pow(1 - k, 3);
+        var k = Math.min(1, (now - back.t0) / 200), e = 1 - Math.pow(1 - k, 3);
         pos = back.from + (back.to - back.from) * e;
         if (k >= 1) { pos = back.to; paint(); flingRaf = 0; return; }
       }
