@@ -24,8 +24,18 @@
 
   /* temáticas */
   .topic + .topic{ margin-top:44px; }
-  .topic-title{ display:flex; align-items:center; gap:12px; margin:0 0 18px; font-family:'Fira Sans', 'Segoe UI', system-ui, sans-serif; font-size:13px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#de0303; }
-  .topic-title::after{ content:""; flex:1; height:2px; background:#e8e6e0; }
+  .topic-title{ margin:0 0 18px; font-family:'Fira Sans', 'Segoe UI', system-ui, sans-serif; font-size:13px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#de0303; }
+  /* el título despliega/oculta la temática (el botón y la flecha los arma el script) */
+  .topic-toggle{ display:flex; align-items:center; gap:12px; width:100%; padding:0; border:0; background:none; font:inherit; letter-spacing:inherit; text-transform:inherit; color:inherit; text-align:left; cursor:pointer; }
+  .topic-toggle::after{ content:""; flex:1; order:1; height:2px; background:#e8e6e0; }
+  .topic-toggle svg{ order:2; flex:none; width:18px; height:18px; transition:transform .25s ease; }
+  .topic-toggle:focus-visible{ outline:2px solid #8f8c82; outline-offset:4px; border-radius:4px; }
+  .topic.is-closed .topic-toggle svg{ transform:rotate(-90deg); }
+  .topic.is-closed .topic-title{ margin-bottom:0; }
+  .topic-body{ display:grid; grid-template-rows:1fr; transition:grid-template-rows .3s ease; }
+  .topic.is-closed .topic-body{ grid-template-rows:0fr; }
+  .topic-inner{ min-height:0; }
+  .topic.is-anim .topic-inner, .topic.is-closed .topic-inner{ overflow:hidden; }   /* sólo mientras se pliega, así no se cortan las sombras */
 
   /* tarjeta: captura redondeada adentro, título y botón a la nota, todo en una pieza */
   .grid{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:24px; }
@@ -52,7 +62,7 @@
     .card{ border-radius:18px; }
     .card h3{ font-size:17px; }
   }
-  @media (prefers-reduced-motion:reduce){ .card{ transition:none; } .card:hover{ transform:none; } }
+  @media (prefers-reduced-motion:reduce){ .card, .topic-body, .topic-toggle svg{ transition:none; } .card:hover{ transform:none; } }
 </style>
 </head>
 <body>
@@ -114,5 +124,35 @@
     </ul>
   </section>
 </div>
+<script>
+(function(){
+  // Cada temática se puede plegar desde su título; se recuerda cuáles quedaron cerradas
+  var KEY = "rninteractivo.cerradas", cerradas = [];
+  try { cerradas = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) {}
+  var CHEVRON = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  Array.prototype.forEach.call(document.querySelectorAll(".topic"), function(sec, n){
+    var h = sec.querySelector(".topic-title"), list = sec.querySelector(".grid"), name = h.textContent.trim();
+    var body = document.createElement("div"), inner = document.createElement("div"), id = "topic-" + n;
+    body.className = "topic-body"; inner.className = "topic-inner"; body.id = id;
+    sec.insertBefore(body, list); inner.appendChild(list); body.appendChild(inner);
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "topic-toggle"; btn.setAttribute("aria-controls", id);
+    btn.innerHTML = '<span></span>' + CHEVRON;
+    btn.firstChild.textContent = name;
+    h.textContent = ""; h.appendChild(btn);
+    function set(closed){ sec.classList.toggle("is-closed", closed); btn.setAttribute("aria-expanded", closed ? "false" : "true"); }
+    set(cerradas.indexOf(name) >= 0);
+    btn.addEventListener("click", function(){
+      var closed = !sec.classList.contains("is-closed");
+      sec.classList.add("is-anim");
+      set(closed);
+      cerradas = cerradas.filter(function(x){ return x !== name; });
+      if (closed) cerradas.push(name);
+      try { localStorage.setItem(KEY, JSON.stringify(cerradas)); } catch (e) {}
+    });
+    body.addEventListener("transitionend", function(ev){ if (ev.target === body) sec.classList.remove("is-anim"); });
+  });
+})();
+</script>
 </body>
 </html>
