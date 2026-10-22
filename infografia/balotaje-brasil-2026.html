@@ -130,6 +130,8 @@
   .rn-tooltip .tt-v{ font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
   .rn-tooltip .tt-v small{ display:block; font-weight:400; color:var(--muted); font-size:10.5px; }
   .rn-tooltip .tt-empty{ font-size:12px; color:var(--muted); }
+  .rn-tooltip .tt-d{ margin-left:5px; font-weight:400; font-size:10.5px; color:var(--muted); white-space:nowrap; }
+  .rn-tooltip .tt-note{ font-size:10.5px; color:var(--muted); padding-top:4px; border-top:1px solid var(--border); }
 
 
   /* ---------- pie ---------- */
@@ -745,7 +747,33 @@
 
   /* ---------- tooltip ---------- */
   var tooltip = $("rnTooltip"), ttBody = $("rnTtBody"), mapWrap = $("rnMapWrap"), svg = mapWrap.querySelector("svg");
+  // Primera vuelta para comparar en la segunda: es definitiva, así que se descarga una sola vez (sin quedar consultando)
+  var comp1t = null;   // null = sin pedir · "cargando" · "listo"
+  function ensure1t(){
+    var st = states["1t"];
+    if (comp1t || (st.national && UFS.every(function(u){ return st.ufs[u[0]]; }))) return;
+    comp1t = "cargando";
+    Promise.all(SCOPES.map(function(sc){
+      return fetchScope(sc, st).then(function(d){ return { scope: sc, ok: true, data: d }; },
+                                     function(e){ return { scope: sc, ok: false, error: e.message }; });
+    })).then(function(outcomes){
+      outcomes.forEach(function(o){ if (o.ok) { if (o.scope === "br") st.national = st.national || o.data; else st.ufs[o.scope.toUpperCase()] = st.ufs[o.scope.toUpperCase()] || o.data; } });
+      comp1t = "listo";
+      if (current === "2t" && selected && tooltip.classList.contains("is-open")) ttBody.innerHTML = tooltipHTML(selected);
+    });
+  }
+  // Diferencia en puntos porcentuales contra la primera vuelta en ese estado ("+4,2 pp" / "−1,3 pp")
+  function deltaVs1t(c, uf){
+    if (current !== "2t") return null;
+    var d = destacadoOf(c), r1 = states["1t"].ufs[uf];
+    if (!d || !r1 || !r1.votosPublicados || c.porcentagem === null) return null;
+    var c1 = findInResult(d, r1);
+    if (!c1 || c1.porcentagem === null) return null;
+    var x = Math.round((c.porcentagem - c1.porcentagem) * 10) / 10;
+    return (x > 0 ? "+" : "") + fmtNum(x, 1) + " pp";
+  }
   function tooltipHTML(uf){
+    if (current === "2t") ensure1t();
     var r = state.ufs[uf];
     var head = '<div class="tt-title">' + esc(UF_NAMES[uf]) + '</div>';
     if (!r) return head + '<div class="tt-empty">Sin datos disponibles.</div>';
@@ -753,13 +781,16 @@
     if (!r.votosPublicados) return head + '<div class="tt-empty">El TSE todavía no divulga los votos.</div>';
     if (!r.candidatos.length || !(r.apurado > 0)) return head + '<div class="tt-empty">Todavía no hay mesas escrutadas.</div>';
     var shown = r.candidatos.filter(function(c, i){ return i < 2 || destacadoOf(c) || (c.porcentagem || 0) >= 5; }).slice(0, 4);
-    var sum = 0;
+    var sum = 0, anyDelta = false;
     var rows = shown.map(function(c){
       sum += c.porcentagem || 0;
+      var dl = deltaVs1t(c, uf);
+      if (dl) anyDelta = true;
       return '<div class="tt-row"><span class="tt-k"><span class="sw" style="background:' + colorOf(c) + '"></span>' + esc(nameOf(c)) + '</span>' +
-        '<span class="tt-v">' + fmtPct(c.porcentagem, 1) + '<small>' + fmtNum(c.votos) + ' votos</small></span></div>';
+        '<span class="tt-v">' + fmtPct(c.porcentagem, 1) + (dl ? '<span class="tt-d">' + dl + '</span>' : '') + '<small>' + fmtNum(c.votos) + ' votos</small></span></div>';
     }).join("");
     if (shown.length < r.candidatos.length) rows += '<div class="tt-row"><span class="tt-k">Otros</span><span class="tt-v">' + fmtPct(Math.max(0, 100 - sum), 1) + '</span></div>';
+    if (anyDelta) rows += '<div class="tt-note">pp: diferencia con la 1.ª vuelta</div>';
     return head + rows;
   }
 
