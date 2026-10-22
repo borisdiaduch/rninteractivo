@@ -99,12 +99,6 @@
   .rn-state:hover{ stroke:var(--black); stroke-width:2.2; }
   .rn-state.is-active{ stroke:var(--black); stroke-width:3.4; }
   .rn-state:focus-visible{ stroke:var(--gray-focus); stroke-width:4; }
-  /* estado que acaba de cambiar de ganador: titila unos segundos */
-  .rn-state.is-flash{ animation:rn-flash .6s ease-in-out 4; }
-  @keyframes rn-flash{ 0%, 100%{ stroke:#fff; stroke-width:2.2; } 50%{ stroke:var(--black); stroke-width:5; } }
-  .rn-change{ margin:6px 0 0; text-align:center; font-size:12.5px; font-weight:700; color:var(--text); }
-  .rn-change[hidden]{ display:none; }
-  @media (prefers-reduced-motion:reduce){ .rn-state.is-flash{ animation:none; stroke:var(--black); stroke-width:4; } }
 
   /* ---------- indicador de interactividad ---------- */
   .rn-hint{ position:absolute; top:30%; left:38%; z-index:6; width:52px; height:52px; pointer-events:none; opacity:1; transition:opacity .35s ease; }
@@ -130,7 +124,9 @@
   .rn-tooltip .tt-v{ font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
   .rn-tooltip .tt-v small{ display:block; font-weight:400; color:var(--muted); font-size:10.5px; }
   .rn-tooltip .tt-empty{ font-size:12px; color:var(--muted); }
-  .rn-tooltip .tt-d{ margin-left:5px; font-weight:400; font-size:10.5px; color:var(--muted); white-space:nowrap; }
+  .rn-tooltip .tt-d{ margin-left:5px; font-weight:700; font-size:10.5px; color:var(--muted); white-space:nowrap; }
+  .rn-tooltip .tt-d.is-up{ color:#16833a; }
+  .rn-tooltip .tt-d.is-down{ color:#de0303; }
   .rn-tooltip .tt-note{ font-size:10.5px; color:var(--muted); padding-top:4px; border-top:1px solid var(--border); }
 
 
@@ -214,7 +210,6 @@
       <div class="rn-duel" id="rnDuel"></div>
     </div>
     <p class="rn-status" id="rnStatus" aria-live="polite">Cargando resultados del TSE…</p>
-    <p class="rn-change" id="rnChange" role="status" aria-live="polite" hidden></p>
 
     <div class="rn-map-wrap" id="rnMapWrap">
       <svg viewBox="-56 0 1000 933" role="group" aria-label="Mapa de Brasil por estado. Cada estado tiene el color del candidato que lidera; el tono más intenso indica mayor porcentaje. Con el teclado, las flechas recorren los estados.">
@@ -762,7 +757,7 @@
       if (current === "2t" && selected && tooltip.classList.contains("is-open")) ttBody.innerHTML = tooltipHTML(selected);
     });
   }
-  // Diferencia en puntos porcentuales contra la primera vuelta en ese estado ("+4,2 pp" / "−1,3 pp")
+  // Diferencia contra la primera vuelta en ese estado: "+2,1 %" (verde) / "−1,4 %" (rojo)
   function deltaVs1t(c, uf){
     if (current !== "2t") return null;
     var d = destacadoOf(c), r1 = states["1t"].ufs[uf];
@@ -770,7 +765,7 @@
     var c1 = findInResult(d, r1);
     if (!c1 || c1.porcentagem === null) return null;
     var x = Math.round((c.porcentagem - c1.porcentagem) * 10) / 10;
-    return (x > 0 ? "+" : "") + fmtNum(x, 1) + " pp";
+    return { txt: (x > 0 ? "+" : "") + fmtNum(x, 1) + " %", cls: x > 0 ? " is-up" : x < 0 ? " is-down" : "" };
   }
   function tooltipHTML(uf){
     if (current === "2t") ensure1t();
@@ -787,10 +782,10 @@
       var dl = deltaVs1t(c, uf);
       if (dl) anyDelta = true;
       return '<div class="tt-row"><span class="tt-k"><span class="sw" style="background:' + colorOf(c) + '"></span>' + esc(nameOf(c)) + '</span>' +
-        '<span class="tt-v">' + fmtPct(c.porcentagem, 1) + (dl ? '<span class="tt-d">' + dl + '</span>' : '') + '<small>' + fmtNum(c.votos) + ' votos</small></span></div>';
+        '<span class="tt-v">' + fmtPct(c.porcentagem, 1) + (dl ? '<span class="tt-d' + dl.cls + '">' + dl.txt + '</span>' : '') + '<small>' + fmtNum(c.votos) + ' votos</small></span></div>';
     }).join("");
     if (shown.length < r.candidatos.length) rows += '<div class="tt-row"><span class="tt-k">Otros</span><span class="tt-v">' + fmtPct(Math.max(0, 100 - sum), 1) + '</span></div>';
-    if (anyDelta) rows += '<div class="tt-note">pp: diferencia con la 1.ª vuelta</div>';
+    if (anyDelta) rows += '<div class="tt-note">Diferencia con la 1.ª vuelta</div>';
     return head + rows;
   }
 
@@ -831,25 +826,6 @@
     tooltip.classList.remove("is-open");
     selected = null;
     renderMap();
-  }
-
-  /* ---------- link a un estado: #SP (segunda vuelta) o #1t-SP (primera vuelta) ---------- */
-  function setHash(uf){
-    var h = uf ? "#" + (current === "1t" ? "1t-" : "") + uf : "";
-    if (location.hash === h || (!h && !location.hash)) return;
-    try { history.replaceState(null, "", location.pathname + location.search + h); } catch (e) {}
-  }
-  function readHash(){
-    var m = /^#(?:(1t|2t)-)?([A-Za-z]{2})$/.exec(location.hash || "");
-    if (!m || !UF_NAMES[m[2].toUpperCase()]) return null;
-    return { e: m[1] || "2t", uf: m[2].toUpperCase() };
-  }
-  function openFromHash(){
-    var h = readHash();
-    if (!h) return;
-    if (h.e !== current) setElection(h.e);
-    var c = centroidInWrap(h.uf); openTooltip(h.uf, c[0], c[1]);
-    rovingTo(h.uf);
   }
 
   /* ---------- teclado: un solo estado entra en el orden de tabulación; las flechas recorren el mapa ---------- */
@@ -897,10 +873,9 @@
         ev.stopPropagation();
         var pt = pointInWrap(ev); openTooltip(uf, pt[0], pt[1]);
       });
-      // Click o toque: además deja el link al estado en la dirección (#SP)
-      p.addEventListener("click", function(){ setHash(uf); rovingTo(uf); });
+      p.addEventListener("click", function(){ rovingTo(uf); });
       // Teclado
-      p.addEventListener("focus", function(){ var c = centroidInWrap(uf); openTooltip(uf, c[0], c[1]); rovingTo(uf); setHash(uf); });
+      p.addEventListener("focus", function(){ var c = centroidInWrap(uf); openTooltip(uf, c[0], c[1]); rovingTo(uf); });
       p.addEventListener("blur", function(){ if (!reordering) closeTooltip(); });
       p.addEventListener("keydown", function(ev){
         var dir = DIRS[ev.key];
@@ -912,9 +887,9 @@
     });
     rovingTo(UFS[0][0]);
     document.addEventListener("pointerup", function(ev){
-      if (ev.pointerType !== "mouse" && !ev.target.closest(".rn-state")) { closeTooltip(); setHash(null); }
+      if (ev.pointerType !== "mouse" && !ev.target.closest(".rn-state")) closeTooltip();
     });
-    document.addEventListener("keydown", function(ev){ if (ev.key === "Escape") { closeTooltip(); setHash(null); } });
+    document.addEventListener("keydown", function(ev){ if (ev.key === "Escape") closeTooltip(); });
     // Click afuera de las tarjetas y del mapa: se deja de mostrar el mapa del candidato elegido
     document.addEventListener("click", function(ev){
       if (selCand === null || ev.target.closest(".rn-duel-wrap, .rn-map-wrap")) return;
@@ -937,41 +912,6 @@
     postHeight();
   }
 
-  /* ---------- aviso cuando un estado cambia de ganador entre actualizaciones ---------- */
-  function leadersOf(st){
-    if (!st.national) return null;                 // primera carga: no hay con qué comparar
-    var out = {};
-    UFS.forEach(function(u){ var r = st.ufs[u[0]]; if (hasData(r) && !r.empate) out[u[0]] = r.lider.numero; });
-    return out;
-  }
-  var changeTimer = null;
-  function announceChanges(st, before){
-    var byWinner = {}, list = [];
-    UFS.forEach(function(u){
-      var uf = u[0], r = st.ufs[uf];
-      if (!(uf in before) || !hasData(r) || r.empate || r.lider.numero === before[uf]) return;
-      var who = nameOf(r.lider);
-      (byWinner[who] = byWinner[who] || []).push(UF_NAMES[uf]);
-      list.push(uf);
-    });
-    if (!list.length || st !== state) return;
-    var txt = Object.keys(byWinner).map(function(who){
-      var ns = byWinner[who];
-      return (ns.length > 1 ? ns.slice(0, -1).join(", ") + " y " + ns[ns.length - 1] + " pasaron a " : ns[0] + " pasó a ") + who;
-    }).join(" · ");
-    var el = $("rnChange");
-    setText(el, txt); el.hidden = false;
-    list.forEach(function(uf){
-      var p = document.querySelector('.rn-state[data-uf="' + uf + '"]');
-      if (!p) return;
-      p.classList.remove("is-flash"); void p.getBoundingClientRect(); p.classList.add("is-flash");
-      setTimeout(function(){ p.classList.remove("is-flash"); }, 2600);
-    });
-    clearTimeout(changeTimer);
-    changeTimer = setTimeout(function(){ el.hidden = true; postHeight(); }, 15000);
-    postHeight();
-  }
-
   function tick(){
     var st = state;
     if (st.running) return;
@@ -980,9 +920,7 @@
       return fetchScope(s, st).then(function(d){ return { scope: s, ok: true, data: d }; },
                                     function(e){ return { scope: s, ok: false, error: e.message }; });
     })).then(function(outcomes){
-      var before = leadersOf(st);
       apply(st, outcomes);
-      if (before) announceChanges(st, before);
       var failed = outcomes.filter(function(o){ return !o.ok; });
       if (failed.length) console.warn("[TSE " + st.id + "] Fallaron:", failed.map(function(o){ return o.scope + " (" + o.error + ")"; }).join(", "));
     }).catch(function(e){
@@ -1136,9 +1074,7 @@
   window.addEventListener("resize", updateDuelFades);
   renderHead();
   renderMap();
-  window.addEventListener("hashchange", openFromHash);
   tick();
-  openFromHash();   // link directo a un estado (#SP): abre su cartel; se completa con los datos al llegar
 })();
 </script>
 </body>
