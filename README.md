@@ -1,6 +1,6 @@
-# rninteractivo
+# RÍO NEGRO Interactivo
 
-Infografías interactivas de Diario Río Negro, publicadas con GitHub Pages.
+Infografías interactivas de Diario Río Negro.
 
 - Índice: https://borisdiaduch.github.io/rninteractivo/
 - Cada proyecto es un `.html` autocontenido en [`infografia/`](infografia/), con su captura en [`preview/`](preview/).
