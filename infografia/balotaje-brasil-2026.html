@@ -63,6 +63,7 @@
   /* tarjetas de candidatos: al elegir una, el mapa muestra sus votos estado por estado */
   .rn-rival[data-i]{ cursor:pointer; transition:opacity .2s ease, background-color .2s ease; }
   @media (hover:hover){ .rn-rival[data-i]:hover{ background-color:#f5f5f5; } }
+  .rn-rival.is-sel{ background-color:#f5f5f5; }   /* el elegido queda con el fondo del hover */
   .rn-rival.is-sel .rn-photo::after{ content:""; position:absolute; inset:0; border-radius:50%; box-shadow:inset 0 0 0 3px var(--c); }
   .rn-rival[data-i]:focus-visible{ outline:2px solid var(--gray-focus); outline-offset:-2px; }
   .rn-duel.has-sel .rn-rival:not(.is-sel){ opacity:.35; }
@@ -123,6 +124,10 @@
   .rn-tooltip .tt-v{ font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
   .rn-tooltip .tt-v small{ display:block; font-weight:400; color:var(--muted); font-size:10.5px; }
   .rn-tooltip .tt-empty{ font-size:12px; color:var(--muted); }
+  .rn-tooltip .tt-d{ margin-left:5px; font-weight:700; font-size:10.5px; color:var(--muted); white-space:nowrap; }
+  .rn-tooltip .tt-d.is-up{ color:#16833a; }
+  .rn-tooltip .tt-d.is-down{ color:#de0303; }
+  .rn-tooltip .tt-note{ font-size:10.5px; color:var(--muted); padding-top:4px; border-top:1px solid var(--border); }
 
 
   /* ---------- pie ---------- */
@@ -207,7 +212,7 @@
     <p class="rn-status" id="rnStatus" aria-live="polite">Cargando resultados del TSE…</p>
 
     <div class="rn-map-wrap" id="rnMapWrap">
-      <svg viewBox="-56 0 1000 933" role="group" aria-label="Mapa de Brasil por estado. Cada estado tiene el color del candidato que lidera; el tono más intenso indica mayor porcentaje.">
+      <svg viewBox="-56 0 1000 933" role="group" aria-label="Mapa de Brasil por estado. Cada estado tiene el color del candidato que lidera; el tono más intenso indica mayor porcentaje. Con el teclado, las flechas recorren los estados.">
         <g class="rn-states">
         <path class="rn-state" data-uf="AC" data-cx="83.6" data-cy="332.5" tabindex="0" role="button" fill="#e6e3da" d="M165.3,343.9L169.5,345.7L169.1,347L167,347.7L165.3,349.3L163.9,350.1L161.1,352.8L160.7,354L159.1,354.7L157.9,354.9L156.7,355.9L155.7,355.4L153.9,355.5L153.9,356.8L151.8,356.7L151.7,357.9L149.3,359.3L147.7,359.8L147.2,361L145.8,362L145.1,364.3L144.6,364.4L142.4,363.1L140.5,362.8L140,363.1L137.8,363.1L136.2,364.5L136.2,365.8L134.1,367.8L133.2,370L131.2,371.2L127.5,372.1L126.3,373.5L122.4,374.3L122.3,373.4L121.3,372.5L121.7,371.5L120.5,370.9L118.1,371.4L115.7,371.1L114.4,370.2L113.7,370.5L111.9,369.8L111.2,370L106.7,369.3L105.8,369.8L104.4,369.5L102.5,369.7L99.5,370.4L97.8,369.3L94.6,369.3L92.9,370.5L91.5,370.7L89.1,372.2L88.2,372L86.6,372.6L83.8,371.9L83.4,370.9L81.7,369.5L79.6,371L79.5,356.4L79.6,344.1L81.5,342.8L81.8,341.6L80.2,339.2L80.4,338.4L82,336.6L82.5,335.4L80.9,335.1L79.3,336.6L77.2,338.3L75.8,339.9L74,340.5L72.8,342.2L72.1,342.3L71.2,343.9L70,343.9L67.2,345.6L66.4,347.4L65.4,347.3L64.2,348L62.7,348.2L44.6,348.2L45.2,347.3L44.8,346.4L45.5,345.4L44.7,343.2L42.6,342.4L43.2,340.3L41,336.9L39.5,336.2L37.2,336.4L36.5,336L32.8,335.2L32.6,334.7L21.6,334.7L24.4,330.8L25.2,330.8L27,328.7L27.6,326.8L26.4,323.6L25.7,323.4L24.3,321.2L23.6,319.1L22.8,318.2L21.2,318.1L20.3,316.6L19.7,316.6L19.9,313.5L17.5,313.3L17,312L14.9,311.3L14.2,310.5L14.2,308.8L12.8,307.4L13.1,305.6L12,304.1L12.1,303.2L11,302.8L10.6,301.8L9.5,301.7L9,299.8L10.2,299.9L10.9,299.1L10.7,297.4L9.5,296.7L7.7,296.2L6.3,294.4L5.1,293.6L4,292.2L5,292L5.5,290.5L4.5,288.2L6.7,288.6L7.1,287.9L10.1,287.5L10.5,286.7L10.2,285.4L8.2,282.6L12.6,284.6L29.2,292L33.9,294.2L44.8,296.4L48.6,297.6L59.6,300.1L72.6,303.1L85.3,305.9L99,313.3L106.3,317.2L112,320.1L120.9,324.8L124.6,326.5L134.3,330.7L149.8,337.3Z"></path>
         <path class="rn-state" data-uf="AL" data-cx="842.9" data-cy="337.1" tabindex="0" role="button" fill="#e6e3da" d="M875.9,323.4L875.3,324.9L874,326.5L872.5,329.8L870.5,332.3L869.1,333.2L868.2,334.9L864.8,338.3L863.5,340.5L862.4,340.8L861.1,342L858.3,346L855.9,349.9L855,350.3L853.9,351.7L853.1,352.1L850.8,354.4L850.3,356.2L848.1,359.5L847.2,357.8L846.5,357.4L845.5,358L844.3,357.6L844.2,355.7L843.6,354.7L842.5,353.9L841.6,354.4L838.7,353.2L837.8,351.8L836.5,351.3L835.5,349.8L835.2,348L833.6,347.9L831,345.9L829.4,345.9L828.1,344.3L826.6,343.4L824,342.4L821.4,342.1L818.5,339.8L816.8,339.9L816.1,338.9L814.6,337.9L811.9,337.1L811.4,336L809.6,335.3L808.5,335.5L806.7,332.9L808.5,331.4L808.8,330.3L809.9,329.3L812.5,328.8L813.1,327.6L815.6,324.9L815.9,323L817.4,322.2L820,325.8L820.7,325.1L822.3,324.4L823.5,324.6L823.9,326L827.4,327.5L829.2,330.1L830.9,330.8L832.6,331.1L834.4,333.4L835.5,334.1L836.4,332.2L837.4,331.5L839,332.1L839.9,331.6L841.3,331.6L842.1,332.4L843.7,333.1L844.1,332L845.6,331.5L847.1,330.2L848.7,330.4L850.8,329.2L852.5,326.4L854.1,326.1L854.6,325.4L854.1,324.4L855.5,323.5L856.8,323.4L858.6,322.7L858.9,322.2L860.8,322.4L861.7,322L862.6,323.5L864.3,323L867.7,321.2L869.2,321.8L873.7,322.8L875.4,322.9Z"></path>
@@ -707,6 +712,7 @@
     }
   }
 
+  var reordering = false;
   function renderMap(){
     var other = false, d = selCand !== null ? EDITORIAL.destacados[selCand] : null, sc = d ? heatScale(d) : null;
     Array.prototype.forEach.call(document.querySelectorAll(".rn-state"), function(p){
@@ -724,14 +730,45 @@
     if (d) renderLegendCand(d, sc);
     if (selected) {
       var a = document.querySelector('.rn-state[data-uf="' + selected + '"]');
-      if (a) a.parentNode.appendChild(a); // al frente, para que se vea el borde completo
+      if (a && a.nextSibling) {                 // al frente, para que se vea el borde completo (sin perder el foco del teclado)
+        var hadFocus = document.activeElement === a;
+        reordering = true; a.parentNode.appendChild(a);
+        if (hadFocus) a.focus({ preventScroll: true });
+        reordering = false;
+      }
     }
   }
 
 
   /* ---------- tooltip ---------- */
   var tooltip = $("rnTooltip"), ttBody = $("rnTtBody"), mapWrap = $("rnMapWrap"), svg = mapWrap.querySelector("svg");
+  // Primera vuelta para comparar en la segunda: es definitiva, así que se descarga una sola vez (sin quedar consultando)
+  var comp1t = null;   // null = sin pedir · "cargando" · "listo"
+  function ensure1t(){
+    var st = states["1t"];
+    if (comp1t || (st.national && UFS.every(function(u){ return st.ufs[u[0]]; }))) return;
+    comp1t = "cargando";
+    Promise.all(SCOPES.map(function(sc){
+      return fetchScope(sc, st).then(function(d){ return { scope: sc, ok: true, data: d }; },
+                                     function(e){ return { scope: sc, ok: false, error: e.message }; });
+    })).then(function(outcomes){
+      outcomes.forEach(function(o){ if (o.ok) { if (o.scope === "br") st.national = st.national || o.data; else st.ufs[o.scope.toUpperCase()] = st.ufs[o.scope.toUpperCase()] || o.data; } });
+      comp1t = "listo";
+      if (current === "2t" && selected && tooltip.classList.contains("is-open")) ttBody.innerHTML = tooltipHTML(selected);
+    });
+  }
+  // Diferencia contra la primera vuelta en ese estado: "+2,1 %" (verde) / "−1,4 %" (rojo)
+  function deltaVs1t(c, uf){
+    if (current !== "2t") return null;
+    var d = destacadoOf(c), r1 = states["1t"].ufs[uf];
+    if (!d || !r1 || !r1.votosPublicados || c.porcentagem === null) return null;
+    var c1 = findInResult(d, r1);
+    if (!c1 || c1.porcentagem === null) return null;
+    var x = Math.round((c.porcentagem - c1.porcentagem) * 10) / 10;
+    return { txt: (x > 0 ? "+" : "") + fmtNum(x, 1) + " %", cls: x > 0 ? " is-up" : x < 0 ? " is-down" : "" };
+  }
   function tooltipHTML(uf){
+    if (current === "2t") ensure1t();
     var r = state.ufs[uf];
     var head = '<div class="tt-title">' + esc(UF_NAMES[uf]) + '</div>';
     if (!r) return head + '<div class="tt-empty">Sin datos disponibles.</div>';
@@ -739,13 +776,16 @@
     if (!r.votosPublicados) return head + '<div class="tt-empty">El TSE todavía no divulga los votos.</div>';
     if (!r.candidatos.length || !(r.apurado > 0)) return head + '<div class="tt-empty">Todavía no hay mesas escrutadas.</div>';
     var shown = r.candidatos.filter(function(c, i){ return i < 2 || destacadoOf(c) || (c.porcentagem || 0) >= 5; }).slice(0, 4);
-    var sum = 0;
+    var sum = 0, anyDelta = false;
     var rows = shown.map(function(c){
       sum += c.porcentagem || 0;
+      var dl = deltaVs1t(c, uf);
+      if (dl) anyDelta = true;
       return '<div class="tt-row"><span class="tt-k"><span class="sw" style="background:' + colorOf(c) + '"></span>' + esc(nameOf(c)) + '</span>' +
-        '<span class="tt-v">' + fmtPct(c.porcentagem, 1) + '<small>' + fmtNum(c.votos) + ' votos</small></span></div>';
+        '<span class="tt-v">' + fmtPct(c.porcentagem, 1) + (dl ? '<span class="tt-d' + dl.cls + '">' + dl.txt + '</span>' : '') + '<small>' + fmtNum(c.votos) + ' votos</small></span></div>';
     }).join("");
     if (shown.length < r.candidatos.length) rows += '<div class="tt-row"><span class="tt-k">Otros</span><span class="tt-v">' + fmtPct(Math.max(0, 100 - sum), 1) + '</span></div>';
+    if (anyDelta) rows += '<div class="tt-note">Diferencia con la 1.ª vuelta</div>';
     return head + rows;
   }
 
@@ -788,6 +828,27 @@
     renderMap();
   }
 
+  /* ---------- teclado: un solo estado entra en el orden de tabulación; las flechas recorren el mapa ---------- */
+  function rovingTo(uf){
+    Array.prototype.forEach.call(document.querySelectorAll(".rn-state"), function(p){
+      p.setAttribute("tabindex", p.getAttribute("data-uf") === uf ? "0" : "-1");
+    });
+  }
+  var DIRS = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1] };
+  function neighbor(uf, dir){
+    var a = document.querySelector('.rn-state[data-uf="' + uf + '"]'), ax = +a.getAttribute("data-cx"), ay = +a.getAttribute("data-cy");
+    var best = null, bestScore = Infinity;
+    Array.prototype.forEach.call(document.querySelectorAll(".rn-state"), function(p){
+      if (p === a) return;
+      var dx = +p.getAttribute("data-cx") - ax, dy = +p.getAttribute("data-cy") - ay;
+      var along = dx * dir[0] + dy * dir[1], across = Math.abs(dx * dir[1] - dy * dir[0]);
+      if (along <= 0) return;
+      var score = along + across * 2.5;        // el más cercano en esa dirección, castigando lo que se desvía
+      if (score < bestScore) { bestScore = score; best = p; }
+    });
+    return best;
+  }
+
   var hint = $("rnHint");
   function dismissHint(){
     if (!hint) return;
@@ -812,14 +873,28 @@
         ev.stopPropagation();
         var pt = pointInWrap(ev); openTooltip(uf, pt[0], pt[1]);
       });
+      p.addEventListener("click", function(){ rovingTo(uf); });
       // Teclado
-      p.addEventListener("focus", function(){ var c = centroidInWrap(uf); openTooltip(uf, c[0], c[1]); });
-      p.addEventListener("blur", closeTooltip);
+      p.addEventListener("focus", function(){ var c = centroidInWrap(uf); openTooltip(uf, c[0], c[1]); rovingTo(uf); });
+      p.addEventListener("blur", function(){ if (!reordering) closeTooltip(); });
+      p.addEventListener("keydown", function(ev){
+        var dir = DIRS[ev.key];
+        if (!dir) return;
+        ev.preventDefault();
+        var n = neighbor(uf, dir);
+        if (n) n.focus();
+      });
     });
+    rovingTo(UFS[0][0]);
     document.addEventListener("pointerup", function(ev){
       if (ev.pointerType !== "mouse" && !ev.target.closest(".rn-state")) closeTooltip();
     });
     document.addEventListener("keydown", function(ev){ if (ev.key === "Escape") closeTooltip(); });
+    // Click afuera de las tarjetas y del mapa: se deja de mostrar el mapa del candidato elegido
+    document.addEventListener("click", function(ev){
+      if (selCand === null || ev.target.closest(".rn-duel-wrap, .rn-map-wrap")) return;
+      pickCand(selCand);
+    });
   }
 
   /* =====================================================================
