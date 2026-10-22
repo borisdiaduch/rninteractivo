@@ -162,6 +162,8 @@
     ronda: "Segunda vuelta",
     // Botón al mapa completo (link vacío = sin botón)
     link: "https://borisdiaduch.github.io/rninteractivo/infografia/balotaje-brasil-2026.html",
+    // Parámetros UTM que se suman al link del botón (para medir los clics desde el banner)
+    utm: { utm_source: "rionegro.com.ar", utm_medium: "banner", utm_campaign: "elecciones-brasil-2026", utm_content: "ver-mas" },
     boton: "Ver más",
     year: 2026,
     office: "0001",                // Presidente
@@ -292,12 +294,21 @@
     items.forEach(function(it){ box.appendChild(it.el); });
   }
 
+  // Suma los UTM de CONFIG al link (respeta los parámetros y el #ancla que ya tenga)
+  function conUtm(url){
+    var u = CONFIG.utm || {}, q = Object.keys(u).filter(function(k){ return u[k]; })
+      .map(function(k){ return encodeURIComponent(k) + "=" + encodeURIComponent(u[k]); }).join("&");
+    if (!q) return url;
+    var i = url.indexOf("#"), hash = i >= 0 ? url.slice(i) : "", base = i >= 0 ? url.slice(0, i) : url;
+    return base + (base.indexOf("?") >= 0 ? "&" : "?") + q + hash;
+  }
+
   function initStatic(){
     $("rnBlank").innerHTML = BLANCOS.map(function(b){
       return '<div data-b="' + b.k + '"><div><p class="n">' + esc(b.nombre) + '</p><p class="v">–</p></div></div>';
     }).join("");
     setText($("rnRonda"), CONFIG.ronda);
-    if (CONFIG.link) { $("rnCta").href = CONFIG.link; setText($("rnCtaText"), CONFIG.boton); $("rnCta").hidden = false; }
+    if (CONFIG.link) { $("rnCta").href = conUtm(CONFIG.link); setText($("rnCtaText"), CONFIG.boton); $("rnCta").hidden = false; }
     $("rnDuel").innerHTML = destacados.map(function(d, i){
       return '<div class="rn-rival" data-i="' + i + '">' +
         '<div class="rn-photo" style="background:' + d.fondo + '"><img src="' + d.foto + '" alt="" width="225" height="225"></div>' +
