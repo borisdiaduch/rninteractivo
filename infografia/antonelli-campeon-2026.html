@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antonelli, campeón del mundo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;600;700;800&family=Fira+Sans:wght@400;500;600;700;800;900&display=swap');
+  .rn-f1 *{ box-sizing:border-box; }
+  .rn-f1{
+    --panel:#ffffff; --border:#dedad0; --text:#2b2a25; --muted:#7a7669; --black:#141414;
+    --ant:#00a19c; --rus:#9a968a; --ham:#d0453c; --ver:#2b3f8f; --grid:#ebe8e0; --soft:#f4f2ec;
+    --num:'Fira Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+    font-family:'Chivo','Segoe UI',system-ui,-apple-system,sans-serif;
+    color:var(--text); -webkit-font-smoothing:antialiased; padding:20px 14px 26px;
+  }
+  .rn-card{ max-width:532px; margin:0 auto; background:var(--panel); position:relative; }
+
+  /* ---------- blindaje contra estilos del tema ---------- */
+  .rn-f1{ font-size:16px; line-height:1.35; text-align:left; }
+  .rn-f1 :where(h1, h2, p, dl, dt, dd, span, b, small){ font-family:inherit; color:inherit; line-height:inherit; text-transform:none; letter-spacing:normal; font-style:normal; margin:0; padding:0; border:0; background:none; }
+  .rn-f1 svg{ max-width:none; }
+  /* ---------- encabezado ---------- */
+  .rn-head{ text-align:center; }
+  .rn-head h1{ margin:0; font-size:28px; line-height:1.1; font-weight:800; letter-spacing:-0.01em; text-wrap:balance; }
+  .rn-dek{ margin:6px auto 0; max-width:30em; font-size:15px; line-height:1.4; text-wrap:balance; }
+  .rn-rule{ width:230px; height:0; border:0; border-top:1px solid var(--black); margin:14px auto 12px; }
+
+  /* ---------- cifras ---------- */
+  .rn-kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:18px 0 0; text-align:center; }
+  .rn-kpis > div{ display:flex; flex-direction:column-reverse; }
+  .rn-kpis dd{ margin:0; font-family:var(--num); font-size:30px; line-height:1; font-weight:800; font-variant-numeric:tabular-nums; }
+  .rn-kpis dt{ margin-top:5px; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .rn-kpis > div:first-child dd{ color:var(--ant); }
+
+  /* ---------- fiebre ---------- */
+  .rn-chart{ margin-top:26px; position:relative; }
+  .rn-sec{ margin:0 0 6px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  .rn-chart svg{ display:block; width:100%; overflow:visible; user-select:none; -webkit-user-select:none; touch-action:pan-y; }
+  .ax{ font-family:var(--num); font-size:10.5px; fill:var(--muted); }
+  .ax.x{ text-anchor:middle; font-weight:600; }
+  .gl{ stroke:var(--grid); stroke-width:1; }
+  .gl.z{ stroke:var(--black); }
+  .ln{ fill:none; stroke-width:2.2; stroke-linejoin:round; stroke-linecap:round; }
+  .ln.ant{ stroke:var(--ant); stroke-width:3.4; }
+  .ln.rus{ stroke:var(--rus); }
+  .ln.ham{ stroke:var(--ham); }
+  .ln.ver{ stroke:var(--ver); }
+  .proj{ fill:none; stroke:var(--ver); stroke-width:1.5; stroke-dasharray:4 4; }
+  .goal{ stroke:var(--black); stroke-width:1.5; }
+  .goal-t{ font-size:11.5px; font-weight:700; fill:var(--black); }
+  .rest{ fill:var(--soft); }
+  .rest-t{ font-size:10.5px; font-weight:700; fill:var(--muted); text-anchor:middle; letter-spacing:.05em; }
+  .today{ stroke:var(--black); stroke-width:1.2; stroke-dasharray:2 3; }
+  .today-t{ font-size:10.5px; font-weight:800; fill:var(--black); text-anchor:middle; letter-spacing:.03em; }
+  .end-t{ font-size:12.5px; font-weight:700; paint-order:stroke; stroke:var(--soft); stroke-width:4px; stroke-linejoin:round; }
+  .end-t tspan.v{ font-family:var(--num); font-weight:800; }
+  .dot{ stroke:#fff; stroke-width:1.5; }
+  .cross{ stroke:var(--black); stroke-width:1; }
+  .rn-leg{ display:none; flex-wrap:wrap; gap:2px 14px; margin:0 0 4px; font-size:12px; font-weight:700; }
+  .rn-leg i{ display:inline-block; width:14px; height:3px; vertical-align:middle; margin-right:5px; }
+  .rn-note{ margin:2px 0 0; font-size:11.5px; color:var(--muted); line-height:1.35; }
+  .rn-call{ margin:16px 0 0; padding:9px 11px; background:var(--soft); font-size:13.5px; line-height:1.4; }
+  .rn-call strong{ font-weight:800; }
+
+  /* ---------- cartelito ---------- */
+  .rn-tooltip{ position:absolute; z-index:7; width:178px; left:0; top:0; background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 12px 9px; box-shadow:0 10px 26px rgba(20,20,20,.18); opacity:0; pointer-events:none; transition:opacity .1s ease; }
+  .rn-tooltip.is-open{ opacity:1; }
+  .tt-title{ font-size:13.5px; font-weight:700; }
+  .tt-sub{ font-size:11.5px; color:var(--muted); margin:1px 0 6px; }
+  .tt-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:11.5px; padding:4px 0; border-top:1px solid var(--border); }
+  .tt-row .k{ display:flex; align-items:center; gap:6px; }
+  .tt-row .sw{ width:8px; height:8px; border-radius:2px; flex:none; }
+  .tt-row b{ font-variant-numeric:tabular-nums; }
+  .tt-row small{ font-weight:400; color:var(--muted); }
+
+  /* ---------- pie (igual que Brasil 2026) ---------- */
+  .rn-foot{ display:flex; gap:6px 18px; align-items:baseline; justify-content:space-between; padding:10px 0 0; margin-top:14px; border-top:2px solid var(--black); flex-direction:row-reverse; }
+  .rn-foot .firma{ display:inline-flex; align-items:center; flex:none; }
+  .rn-foot .firma svg{ height:12px; width:auto; display:block; }
+  .rn-foot .fuente{ font-size:11px; color:var(--text); }
+
+  @media (max-width:640px){
+    .rn-head h1{ font-size:23px; }
+    .rn-dek{ font-size:14px; }
+    .rn-kpis dd{ font-size:24px; }
+    .rn-kpis dt{ font-size:9.5px; }
+    .rn-leg{ display:flex; }
+  }
+  @media (prefers-reduced-motion:reduce){ .rn-f1 *{ transition:none !important; } }
+</style>
+</head>
+<body style="margin:0;">
+<div class="rn-f1">
+  <div class="rn-card" id="rnCard">
+    <div class="rn-head">
+      <h1>Antonelli, campeón del mundo</h1>
+      <p class="rn-dek">Con el tercer puesto en México, el italiano de Mercedes aseguró el título a cuatro fechas del final y, a los 20 años, es el campeón más joven de la historia de la Fórmula 1.</p>
+    </div>
+
+    <dl class="rn-kpis">
+      <div><dt>puntos</dt><dd>380</dd></div>
+      <div><dt>victorias</dt><dd>9</dd></div>
+      <div><dt>poles</dt><dd>7</dd></div>
+      <div><dt>años</dt><dd>20</dd></div>
+    </dl>
+
+    <section class="rn-chart" id="rnChart" aria-label="Puntos acumulados fecha por fecha">
+      <h2 class="rn-sec">Puntos acumulados, fecha por fecha</h2>
+      <p class="rn-leg" id="rnLeg"><span><i style="background:var(--ant)"></i>Antonelli</span><span><i style="background:var(--ver)"></i>Verstappen</span><span><i style="background:var(--ham)"></i>Hamilton</span><span><i style="background:var(--rus)"></i>Russell</span></p>
+      <svg id="rnSvg" role="img" aria-label="Fiebre de puntos acumulados en 19 fechas: Antonelli 380, Verstappen 261, Hamilton 259, Russell 252. Lo máximo que puede alcanzar Verstappen es 361."></svg>
+      <div class="rn-tooltip" id="rnTip" role="status" aria-live="polite"></div>
+    </section>
+
+
+    <div class="rn-foot">
+      <span class="firma" aria-label="Río Negro" title="Infografía: Boris Diaduch"><svg viewBox="0 0 321 50" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M22.984 22.957c0 2.836-1.015 4.082-3.793 4.082H18.06V18.82h1.132c2.72 0 3.793 1.301 3.793 4.137M40.59 49.32v-8.218h-.512c-.504 0-1.191-.399-1.414-1.418l-.34-1.704c-1.02-5.101-3.004-6.8-6.851-7.652v-.226c5.156-1.532 6.965-4.649 6.965-9.012 0-7.656-4.868-11.453-17.38-11.453H0v8.5h1.363c.563 0 1.528.968 1.528 1.535V39.57c0 .567-.965 1.532-1.528 1.532H0v8.218h21.344v-8.218h-2.832v-5.844h1.758c1.921 0 2.828.91 3.054 3.289l1.02 10.773zm7.797-41.047h8.328l5.824-4.875V0H49.58zM42.445 49.32h21.852v-8.218h-1.59c-.562 0-1.531-.965-1.531-1.532V19.672c0-.567.969-1.535 1.531-1.535h1.59v-8.5H42.445v8.5h1.582c.57 0 1.532.968 1.532 1.535V39.57c0 .567-.961 1.532-1.532 1.532h-1.582zm49.18-19.558c0 7.09-1.93 10.543-5.04 10.543-3.112 0-5.034-3.453-5.034-10.543 0-7.086 1.922-10.207 5.035-10.207 3.11 0 5.039 3.12 5.039 10.207m16.016-.282c0-13.156-9.282-20.523-21.055-20.523-11.777 0-21.059 7.367-21.059 20.523C65.527 42.63 74.36 50 86.586 50s21.055-7.371 21.055-20.52m8.98 19.84h17.094v-8.218h-3.113V29.59h.171l10.864 19.73h13.644V19.672c0-.567.961-1.535 1.531-1.535h1.13v-8.5h-16.696v8.5h2.941v9.246h-.167l-9.743-17.746h-17.656v8.5h1.356c.57 0 1.53.968 1.53 1.535V39.57c0 .567-.96 1.532-1.53 1.532h-1.356zm43.176 0h35.379V34.922h-9.34l-1.184 5.496h-6.343v-6.797h8.546v-9.129h-8.546V18.82h6.226l1.3 4.48h8.888V9.638h-34.926v8.5h1.36c.57 0 1.527.968 1.527 1.535V39.57c0 .567-.957 1.532-1.528 1.532h-1.36zm56.762.68c3.34 0 7.195-.738 8.78-1.758 1.016 0 1.524 1.078 1.524 1.078h7.645V38.04c0-.567.96-1.532 1.527-1.532h.621v-8.215h-18.96v7.988h2.152v4.024a4.982 4.982 0 01-1.364.172c-4.297 0-5.316-4.137-5.316-11.223 0-7.938 2.598-10.094 6.957-10.094.453 0 1.363.059 1.813.113l1.527 4.82h9.851V9.638h-10.304c-1.918-.399-3.961-.68-6.11-.68-11.882 0-19.984 7.313-19.984 21.031 0 13.157 7.023 20.012 19.64 20.012m44.368-27.044c0 2.836-1.02 4.082-3.79 4.082h-1.132V18.82h1.133c2.718 0 3.789 1.301 3.789 4.137m17.61 26.363v-8.218h-.513c-.507 0-1.183-.399-1.414-1.418l-.336-1.704c-1.023-5.101-3-6.8-6.851-7.652v-.226c5.148-1.532 6.96-4.649 6.96-9.012 0-7.656-4.866-11.453-17.378-11.453h-21.05v8.5h1.35c.567 0 1.532.968 1.532 1.535V39.57c0 .567-.965 1.532-1.531 1.532h-1.352v8.218h21.332v-8.218h-2.824v-5.844h1.75c1.926 0 2.832.91 3.055 3.289l1.023 10.773zm26.48-19.558c0 7.09-1.922 10.543-5.04 10.543-3.109 0-5.038-3.453-5.038-10.543 0-7.086 1.93-10.207 5.039-10.207 3.117 0 5.039 3.12 5.039 10.207m16.02-.282c0-13.156-9.286-20.523-21.06-20.523-11.777 0-21.058 7.367-21.058 20.523 0 13.149 8.832 20.52 21.059 20.52 12.226 0 21.058-7.371 21.058-20.52" fill="#141414"></path></svg></span>
+      <span class="fuente">Infografía: Boris Diaduch.</span>
+      <span class="fuente">Fuente: FIA / Fórmula 1.</span>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+var CHART_ID = "antonelli-campeon-2026";
+/* puntos por fecha (carrera + sprint) */
+var GP = ["Australia","China","Japón","Miami","Canadá","Mónaco","Barcelona","Austria","Gran Bretaña","Bélgica","Hungría","Países Bajos","Italia","España","Azerbaiyán","Baréin (en Malasia)","Singapur","Estados Unidos","México"];
+var S = [
+  { k:"ant", n:"Antonelli", c:"var(--ant)", p:[18,29,25,28,31,25,0,15,8,25,15,23,25,25,10,18,20,25,15] },
+  { k:"ver", n:"Verstappen", c:"var(--ver)", p:[8,0,4,14,17,0,12,18,3,15,18,3,15,18,18,25,33,15,25] },
+  { k:"rus", n:"Russell",   c:"var(--rus)", p:[25,26,12,17,8,0,18,25,23,0,6,23,18,10,25,0,2,4,10] },
+  { k:"ham", n:"Hamilton",  c:"var(--ham)", p:[12,21,8,10,21,18,25,10,22,12,10,14,8,0,8,15,15,12,18] }
+];
+S.forEach(function(s){ var a = 0; s.acc = [0].concat(s.p.map(function(v){ return a += v; })); });
+
+var svg = document.getElementById("rnSvg"), tip = document.getElementById("rnTip"), chart = document.getElementById("rnChart");
+var NS = "http://www.w3.org/2000/svg", ROUNDS = 23, DONE = 19, YMAX = 400, GOAL = 361;
+var geo = null;
+
+function el(name, attrs, text){
+  var e = document.createElementNS(NS, name);
+  for (var k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  svg.appendChild(e); return e;
+}
+
+function draw(){
+  var W = svg.parentNode.clientWidth, small = W < 440;
+  var H = small ? 270 : 300, m = { t:30, r:6, b:22, l:28 };
+  var pw = W - m.l - m.r, ph = H - m.t - m.b;
+  var x = function(i){ return m.l + i / ROUNDS * pw; };
+  var y = function(v){ return m.t + ph - v / YMAX * ph; };
+  geo = { x:x, y:y, m:m, pw:pw, W:W };
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("height", H);
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+  /* fechas que faltan */
+  el("rect", { "class":"rest", x:x(DONE), y:m.t, width:x(ROUNDS) - x(DONE), height:ph });
+  el("text", { "class":"rest-t", x:(x(DONE) + x(ROUNDS)) / 2, y:y(0) - 8 }, "FALTAN 4");
+
+  /* grilla */
+  [0,100,200,300,400].forEach(function(v){
+    el("line", { "class":"gl" + (v ? "" : " z"), x1:m.l - 4, x2:m.l + pw, y1:y(v), y2:y(v) });
+    el("text", { "class":"ax", x:0, y:y(v) + 3.5 }, v);
+  });
+  [[1,"AUS"],[6,"MON"],[12,"NED"],[19,"MEX"],[23,"ABU"]].forEach(function(t){
+    el("text", { "class":"ax x", x:Math.min(x(t[0]), W - 12), y:H - 6 }, t[1]);
+  });
+
+  /* hoy: México */
+  el("text", { "class":"today-t", x:x(19), y:m.t - 11 }, "CAMPEÓN");
+
+  /* máximo de Russell */
+  el("line", { "class":"goal", x1:m.l, x2:x(ROUNDS), y1:y(GOAL), y2:y(GOAL) });
+  el("text", { "class":"goal-t", x:m.l + 4, y:y(GOAL) - 6 }, small ? "361: el máximo de Verstappen" : "361: lo máximo que puede sumar Verstappen");
+  el("path", { "class":"proj", d:"M" + x(DONE) + "," + y(261) + "L" + x(ROUNDS) + "," + y(GOAL) });
+
+  /* líneas (Antonelli arriba de todo) */
+  S.slice().reverse().forEach(function(s){
+    el("path", { "class":"ln " + s.k, d:s.acc.map(function(v,i){ return (i ? "L" : "M") + x(i).toFixed(1) + "," + y(v).toFixed(1); }).join("") });
+    el("circle", { "class":"dot", cx:x(DONE), cy:y(s.acc[DONE]), r:4, fill:s.c });
+  });
+
+  /* rótulos finales, en la zona de fechas que faltan */
+  var lx = x(DONE) + 7;
+  [["Antonelli",380,"var(--ant)",y(380) + 17],["Verstappen",261,"var(--ver)",y(261) + 17],["Hamilton",259,"var(--ham)",y(261) + 32],["Russell",252,"var(--rus)",y(261) + 47]].forEach(function(l){
+    var t = el("text", { "class":"end-t", x:lx, y:l[3], fill:l[2] });
+    if (small){ t.innerHTML = '<tspan class="v">' + l[1] + '</tspan>'; }
+    else { t.innerHTML = l[0] + ' <tspan class="v">' + l[1] + '</tspan>'; }
+  });
+  /* capa de interacción */
+  geo.cross = el("line", { "class":"cross", x1:0, x2:0, y1:m.t, y2:y(0), opacity:0 });
+  geo.dots = S.map(function(s){ return el("circle", { "class":"dot", r:4.5, fill:s.c, opacity:0 }); });
+  var hit = el("rect", { x:m.l, y:m.t, width:x(DONE) - m.l + 6, height:ph, fill:"transparent", style:"cursor:crosshair" });
+  hit.addEventListener("pointermove", move);
+  hit.addEventListener("pointerdown", move);
+  hit.addEventListener("pointerleave", function(e){ if (e.pointerType === "mouse") hide(); });
+}
+
+function move(e){
+  var r = svg.getBoundingClientRect(), px = e.clientX - r.left;
+  var i = Math.round((px - geo.m.l) / geo.pw * ROUNDS);
+  i = Math.max(1, Math.min(DONE, i));
+  var cx = geo.x(i);
+  geo.cross.setAttribute("x1", cx); geo.cross.setAttribute("x2", cx); geo.cross.setAttribute("opacity", 1);
+  geo.dots.forEach(function(d, k){ d.setAttribute("cx", cx); d.setAttribute("cy", geo.y(S[k].acc[i])); d.setAttribute("opacity", 1); });
+  tip.innerHTML = '<div class="tt-title">GP de ' + GP[i-1] + '</div><div class="tt-sub">Fecha ' + i + ' · acumulado</div>' +
+    S.map(function(s){ return '<div class="tt-row"><span class="k"><span class="sw" style="background:' + s.c + '"></span>' + s.n + '</span><b>' + s.acc[i] + ' <small>(+' + s.p[i-1] + ')</small></b></div>'; }).join("");
+  var c = chart.getBoundingClientRect(), w = 178;
+  var left = (r.left - c.left) + cx + (cx > geo.W / 2 ? -w - 12 : 12);
+  tip.style.left = Math.max(0, Math.min(left, c.width - w)) + "px";
+  var py = geo.y(S[0].acc[i]), th = tip.offsetHeight || 120;
+  var top = py + th + 20 > geo.y(0) ? geo.y(S[2].acc[i]) - th - 14 : py + 14;
+  tip.style.top = (r.top - c.top + top) + "px";
+  tip.classList.add("is-open");
+}
+function hide(){
+  tip.classList.remove("is-open");
+  if (!geo) return;
+  geo.cross.setAttribute("opacity", 0);
+  geo.dots.forEach(function(d){ d.setAttribute("opacity", 0); });
+}
+document.addEventListener("pointerdown", function(e){ if (!svg.contains(e.target)) hide(); });
+
+draw();
+var rw = svg.parentNode.clientWidth;
+window.addEventListener("resize", function(){ var w = svg.parentNode.clientWidth; if (w !== rw){ rw = w; hide(); draw(); } });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+
+/* ---------- altura del iframe ---------- */
+function postHeight(){
+  if (window.parent === window) return;
+  window.parent.postMessage({ type:"rn-iframe-height", id:CHART_ID, height:Math.ceil(document.documentElement.scrollHeight) }, "*");
+}
+if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body);
+window.addEventListener("load", postHeight);
+})();
+</script>
+</body>
+</html>
